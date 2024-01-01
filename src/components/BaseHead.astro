@@ -1,0 +1,49 @@
+---
+// Import the global.css file here so that it is included on
+// all pages through the use of the <BaseHead /> component.
+import '@/styles/global.scss'
+
+interface Props {
+  description: string
+  image?: string
+  title: string
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+const { description, image = '/ogp_home.png', title } = Astro.props
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta content="width=device-width,initial-scale=1" name="viewport" />
+<link href="/favicon.png" rel="icon" />
+<meta content={Astro.generator} name="generator" />
+
+<!-- Font preloads -->
+<link as="font" href="/fonts/LINESeedJP_OTF_Th.woff2" rel="preload" type="font/woff2" crossorigin />
+<link as="font" href="/fonts/LINESeedJP_OTF_Rg.woff2" rel="preload" type="font/woff2" crossorigin />
+<link as="font" href="/fonts/LINESeedJP_OTF_Bd.woff2" rel="preload" type="font/woff2" crossorigin />
+<link as="font" href="/fonts/LINESeedJP_OTF_Eb.woff2" rel="preload" type="font/woff2" crossorigin />
+
+<!-- Canonical URL -->
+<link href={canonicalURL} rel="canonical" />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta content={title} name="title" />
+<meta content={description} name="description" />
+
+<!-- Open Graph / Facebook -->
+<meta content="website" property="og:type" />
+<meta content={Astro.url} property="og:url" />
+<meta content={title} property="og:title" />
+<meta content={description} property="og:description" />
+<meta content={new URL(image, Astro.url)} property="og:image" />
+
+<!-- Twitter -->
+<meta content="summary_large_image" property="twitter:card" />
+<meta content={Astro.url} property="twitter:url" />
+<meta content={title} property="twitter:title" />
+<meta content={description} property="twitter:description" />
+<meta content={new URL(image, Astro.url)} property="twitter:image" />

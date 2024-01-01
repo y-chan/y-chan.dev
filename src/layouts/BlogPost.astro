@@ -1,0 +1,111 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+import BaseHead from '@/components/BaseHead.astro'
+import Footer from '@/components/Footer.astro'
+import FormattedDate from '@/components/FormattedDate.astro'
+import Header from '@/components/Header.astro'
+import Image from '@/components/Image.astro'
+import { SITE_URL } from '@/consts'
+
+type Props = CollectionEntry<'blog'>['data'] & {
+  slug: string
+}
+
+const { description, heroImage, pubDate, title, updatedDate, slug } = Astro.props
+---
+
+<html lang="jp">
+  <head>
+    <BaseHead description={description} title={title} image={`/blog/og/${slug}.png`} />
+  </head>
+
+  <body>
+    <Header />
+    <main>
+      <article class="max-w-6xl mx-auto md:p-10 p-4">
+        <div class="md:p-10 p-4 bg-primary-200 rounded-2xl w-full md:mb-10 mb-4">
+          <div>
+            {heroImage && <Image alt="" height={480} src={heroImage} width={960} />}
+          </div>
+          <div class="md:pt-6 text-center">
+            <div class="text-gray-500 text-md">
+              <FormattedDate date={pubDate} /> 公開
+              {
+                updatedDate && (
+                  <div class="font-italic">
+                    <FormattedDate date={updatedDate} /> 更新
+                  </div>
+                )
+              }
+            </div>
+            <h1>{title}</h1>
+          </div>
+        </div>
+        <div class="p-10 bg-primary-200 rounded-2xl w-full my-10">
+          <slot />
+        </div>
+      </article>
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style lang="scss" is:global>
+  @use '@/styles/variables' as vars;
+  .font-italic {
+    font-style: italic;
+  }
+
+  main {
+    @apply bg-primary-100;
+    @apply m-0 p-0;
+
+    padding-top: vars.$header-size;
+
+  }
+  a {
+    @apply text-primary-500;
+  }
+
+  a:hover {
+    @apply text-primary-800;
+  }
+
+  h1 {
+    @apply text-4xl;
+    @apply font-bold;
+    @apply my-2;
+  }
+
+  h2 {
+    @apply text-3xl;
+    @apply font-bold;
+    @apply my-2;
+    @apply my-2;
+    @apply border-primary-600;
+
+    border-bottom-style: solid;
+    border-bottom-width: 4px;
+  }
+
+  h3 {
+    @apply text-2xl;
+    @apply font-bold;
+    @apply my-2;
+    @apply px-2;
+    @apply border-primary-600;
+
+    border-left-style: solid;
+    border-left-width: 4px;
+  }
+
+  p {
+    @apply text-base;
+  }
+
+  blockquote {
+    @apply border-primary-700;
+    @apply text-gray-500;
+  }
+</style>

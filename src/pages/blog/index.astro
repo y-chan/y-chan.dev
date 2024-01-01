@@ -1,0 +1,94 @@
+---
+import BaseHead from '@/components/BaseHead.astro'
+import Footer from '@/components/Footer.astro'
+import FormattedDate from '@/components/FormattedDate.astro'
+import Header from '@/components/Header.astro'
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/consts'
+import Image from '@/components/Image.astro'
+import { getCollection } from 'astro:content'
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+)
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <BaseHead description={SITE_DESCRIPTION} title={SITE_TITLE} />
+    <style>
+      ul li {
+        width: calc(50% - 1rem);
+      }
+      ul li * {
+        text-decoration: none;
+        transition: 0.2s ease;
+      }
+      /* ul li:first-child {
+        width: 100%;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      ul li:first-child img {
+        width: 100%;
+      }
+      ul li:first-child .title {
+        font-size: 2.369rem;
+      } */
+      /* ul li img {
+        margin-bottom: 0.5rem;
+        border-radius: 12px;
+      } */
+      ul li a {
+        display: block;
+      }
+
+      ul li a:hover h4,
+      ul li a:hover p {
+        @apply text-primary-500;
+      }
+      ul a:hover img {
+        @apply shadow-gray-500 shadow-md;
+        /* box-shadow: var(--box-shadow); */
+      }
+      @media (max-width: 720px) {
+        ul {
+          gap: 0.5em;
+        }
+        ul li {
+          width: 100%;
+          text-align: center;
+        }
+        ul li:first-child {
+          margin-bottom: 0;
+        }
+        ul li:first-child .title {
+          font-size: 1.563em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main class="w-full">
+      <section class="p-10">
+        <ul class="flex flex-wrap gap-8 list-none m-0 p-0">
+          {
+            posts.map((post) => (
+              <li class="">
+                <a href={`/blog/${post.slug}/`}>
+                  <Image alt="" height={360} src={post.data.heroImage ?? `${SITE_URL}/blog/ogp/${post.slug}.png`}) width={720} class="rounded-lg mb-2" />
+                  <h4 class="text-xl text-black">{post.data.title}</h4>
+                  <p class="text-lg text-gray-500">
+                    <FormattedDate date={post.data.pubDate} />
+                  </p>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </main>
+    <Footer />
+  </body>
+</html>

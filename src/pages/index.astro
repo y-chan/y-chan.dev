@@ -1,0 +1,53 @@
+---
+import PortraitImage from'@/assets/y_chan_portrait.png'
+import BaseHead from '@/components/BaseHead.astro'
+import Header from '@/components/Header.astro'
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts'
+import { Image } from 'astro:assets'
+
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <BaseHead description={SITE_DESCRIPTION} image="/ogp_home.png" title={SITE_TITLE} />
+  </head>
+  <body>
+    <Header title={SITE_TITLE} />
+    <main>
+      <div class="flex flex-1 w-[100vw] h-[100vh] bg-primary-300">
+        <div class="flex flex-wrap w-[100vw]">
+          <div class="flex items-center md:h-[100vh] h-[60vh] md:w-[40vw] w-[100vw]">
+            <div class="flex justify-center mx-auto">
+              <Image alt="portrait" class="h-[100%]" src={PortraitImage} />
+            </div>
+          </div>
+          <div class="md:w-[60vw] w-[100vw]">
+            <div class="flex items-center md:h-[100vh] h-[40vh]">
+              <div class="flex mx-auto">
+                <div class="flex-col flex-1">
+                  <div class="text-4xl">
+                    Yちゃん / y-chan
+                  </div>
+                  <div class="text-base">
+                    The University of Electro-Communications
+                  </div>
+                  <div class="text-base">
+                    このページは工事中です
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style lang="scss">
+  @use '@/styles/variables' as vars;
+  main {
+    padding: 0;
+  }
+</style>
