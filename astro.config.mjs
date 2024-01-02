@@ -3,7 +3,7 @@ import react from "@astrojs/react";
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
 import rehypePrism from "@mapbox/rehype-prism";
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkEmoji from "remark-emoji";
@@ -31,6 +31,9 @@ export default defineConfig({
       maxDepth: 3
     }]],
     remarkPlugins: [remarkEmoji, remarkMath, remarkCodeTitles]
+  },
+  image: {
+    service: passthroughImageService(),
   },
   vite: {
     optimizeDeps: {
