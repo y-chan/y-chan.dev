@@ -1,4 +1,5 @@
 import mdx from '@astrojs/mdx';
+import react from "@astrojs/react";
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
 import rehypePrism from "@mapbox/rehype-prism";
@@ -10,12 +11,15 @@ import remarkCodeTitles from "remark-flexible-code-titles";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 
-import tsconfigPaths from 'vite-tsconfig-paths'
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
 
 // eslint-disable-next-line no-restricted-imports
 import { SITE_URL } from './src/consts';
 
-import react from "@astrojs/react";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,7 +36,11 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ['@resvg/resvg-js']
     },
-    plugins: [tsconfigPaths()]
+    resolve: {
+      alias: {
+        "@/": `${path.resolve(__dirname)}/src/`,
+      },
+    },
   },
   site: SITE_URL
 });
