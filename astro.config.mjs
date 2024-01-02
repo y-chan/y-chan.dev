@@ -10,6 +10,8 @@ import remarkCodeTitles from "remark-flexible-code-titles";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
 
+import tsconfigPaths from 'vite-tsconfig-paths'
+
 // eslint-disable-next-line no-restricted-imports
 import { SITE_URL } from './src/consts';
 
@@ -29,7 +31,8 @@ export default defineConfig({
   vite: {
     optimizeDeps: {
       exclude: ['@resvg/resvg-js']
-    }
+    },
+    plugins: [tsconfigPaths()]
   },
   site: SITE_URL
 });
