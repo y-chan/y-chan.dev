@@ -3,4 +3,4 @@
 
 export const SITE_TITLE = "y-chan's website"
 export const SITE_DESCRIPTION = "Yちゃん/y-chanのWebサイト"
-export const SITE_URL = import.meta.env.MODE === "development" ? "http://localhost" : "https://y-chan.dev"
+export const SITE_URL = "https://y-chan.dev"
