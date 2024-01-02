@@ -3,7 +3,7 @@ import BaseHead from '@/components/BaseHead.astro'
 import Footer from '@/components/Footer.astro'
 import FormattedDate from '@/components/FormattedDate.astro'
 import Header from '@/components/Header.astro'
-import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/consts'
+import { BLOG_DESCRIPTION, BLOG_TITLE, SITE_URL } from '@/consts'
 import Image from '@/components/Image.astro'
 import { getCollection } from 'astro:content'
 
@@ -15,7 +15,7 @@ const posts = (await getCollection('blog')).sort(
 <!doctype html>
 <html lang="ja">
   <head>
-    <BaseHead description={SITE_DESCRIPTION} title={SITE_TITLE} />
+    <BaseHead description={BLOG_DESCRIPTION} title={BLOG_TITLE} />
     <style>
       ul li {
         width: calc(50% - 1rem);
@@ -77,7 +77,7 @@ const posts = (await getCollection('blog')).sort(
             posts.map((post) => (
               <li class="">
                 <a href={`/blog/${post.slug}/`}>
-                  <Image alt="" height={360} src={post.data.heroImage ?? `${SITE_URL}/blog/ogp/${post.slug}.png`}) width={720} class="rounded-lg mb-2" />
+                  <Image alt="" height={360} src={post.data.heroImage ?? `${SITE_URL}/blog/og/${post.slug}.png`}) width={720} class="rounded-lg mb-2" />
                   <h4 class="text-xl text-black">{post.data.title}</h4>
                   <p class="text-lg text-gray-500">
                     <FormattedDate date={post.data.pubDate} />

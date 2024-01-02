@@ -3,4 +3,6 @@
 
 export const SITE_TITLE = "y-chan's website"
 export const SITE_DESCRIPTION = "Yちゃん/y-chanのWebサイト"
+export const BLOG_TITLE = "y-chan's blog"
+export const BLOG_DESCRIPTION = "Yちゃん/y-chanのブログ"
 export const SITE_URL = "https://y-chan.dev"
