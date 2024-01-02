@@ -15,7 +15,7 @@ const posts = (await getCollection('blog')).sort(
 <!doctype html>
 <html lang="ja">
   <head>
-    <BaseHead description={BLOG_DESCRIPTION} title={BLOG_TITLE} />
+    <BaseHead description={BLOG_DESCRIPTION} title={BLOG_TITLE} image="/ogp_blog.png" />
     <style>
       ul li {
         width: calc(50% - 1rem);
