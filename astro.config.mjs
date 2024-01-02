@@ -5,7 +5,6 @@ import rehypePrism from "@mapbox/rehype-prism";
 import { defineConfig } from 'astro/config';
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
-import remarkBreaks from "remark-breaks";
 import remarkEmoji from "remark-emoji";
 import remarkCodeTitles from "remark-flexible-code-titles";
 import remarkMath from "remark-math";
@@ -25,9 +24,7 @@ export default defineConfig({
       heading: "目次",
       maxDepth: 3
     }]],
-    remarkPlugins: [remarkEmoji, remarkMath,
-    // remarkBreaks,
-    remarkCodeTitles]
+    remarkPlugins: [remarkEmoji, remarkMath, remarkCodeTitles]
   },
   vite: {
     optimizeDeps: {
