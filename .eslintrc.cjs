@@ -133,5 +133,5 @@ module.exports = {
     },
     // ...
   ],
-  ignorePatterns: [".eslintrc.cjs"],
+  ignorePatterns: [".eslintrc.cjs", "node_modules/*", "dist/*"],
 }

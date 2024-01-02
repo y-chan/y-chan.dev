@@ -1,7 +1,7 @@
 import { Resvg } from "@resvg/resvg-js"
 import fs from 'fs'
+import React from "react"
 import satori from "satori"
-
 
 export async function getOgImage(text: string, heroImagePath?: string) {
   // const fontData = (await getFontData()) as ArrayBuffer
@@ -24,6 +24,7 @@ export async function getOgImage(text: string, heroImagePath?: string) {
     >
       {fullHeroImag && (
         <img
+          alt=""
           src={`data:image/png;base64,${fullHeroImag}`}
           style={{
             height: "420px",
@@ -45,12 +46,14 @@ export async function getOgImage(text: string, heroImagePath?: string) {
         }}
       />
       <img
+        alt=""
         src={`data:image/png;base64,${ogpFrame}`}
         style={{
           left: 0, position: "absolute", top: 0
         }}
       />
       {!fullHeroImag && <img
+        alt=""
         src={`data:image/png;base64,${portrait}`}
         style={{
           height: "200px",
@@ -85,7 +88,7 @@ export async function getOgImage(text: string, heroImagePath?: string) {
           right: "65px",
           top: `${480 - 30 - 75}px`
         }}>
-          y-chan's blogs
+          y-chan&apos;s blogs
         </h2>
       </section>
       {/* <section>
@@ -108,28 +111,4 @@ export async function getOgImage(text: string, heroImagePath?: string) {
   const resvg = new Resvg(svg)
 
   return resvg.render().asPng()
-}
-
-
-
-async function getFontData() {
-  const API = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700`
-
-  const css = await (
-    await fetch(API, {
-      headers: {
-        // Make sure it returns TTF.
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1",
-      },
-    })
-  ).text()
-
-  const resource = css.match(
-    /src: url\((.+)\) format\('(opentype|truetype)'\)/
-  )
-
-  if (!resource) return
-
-  return await fetch(resource[1]).then((res) => res.arrayBuffer())
 }
