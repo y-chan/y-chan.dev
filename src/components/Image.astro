@@ -7,14 +7,14 @@ export type Props = LocalImageProps | RemoteImageProps
 const props = Astro.props
 
 let src = props.src
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{jpeg,jpg,png,gif}');
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{jpeg,jpg,png,gif}')
 
 if (typeof src === "string" && !src.startsWith("http")) {
   const imagePath = `/src/assets/${src}`
   if (!images[imagePath]) {
-    throw new Error(`"${src}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif}"`);
+    throw new Error(`"${src}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif}"`)
   }
-  src = images[imagePath]();
+  src = images[imagePath]()
 }
 
 ---

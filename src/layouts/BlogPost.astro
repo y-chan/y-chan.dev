@@ -12,12 +12,12 @@ type Props = CollectionEntry<'blog'>['data'] & {
   slug: string
 }
 
-const { description, heroImage, pubDate, title, updatedDate, slug } = Astro.props
+const { description, heroImage, pubDate, slug, title, updatedDate } = Astro.props
 ---
 
 <html lang="jp">
   <head>
-    <BaseHead description={description} title={title} image={`/blog/og/${slug}.png`} />
+    <BaseHead description={description} image={`/blog/og/${slug}.png`} title={title} />
   </head>
 
   <body>
