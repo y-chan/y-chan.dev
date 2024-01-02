@@ -29,5 +29,10 @@ export default defineConfig({
     // remarkBreaks,
     remarkCodeTitles]
   },
+  vite: {
+    optimizeDeps: {
+      exclude: ['@resvg/resvg-js']
+    }
+  },
   site: SITE_URL
 });

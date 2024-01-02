@@ -1,6 +1,7 @@
+import { Resvg } from "@resvg/resvg-js"
 import fs from 'fs'
 import satori from "satori"
-import sharp from "sharp"
+
 
 export async function getOgImage(text: string, heroImagePath?: string) {
   // const fontData = (await getFontData()) as ArrayBuffer
@@ -23,66 +24,66 @@ export async function getOgImage(text: string, heroImagePath?: string) {
     >
       {fullHeroImag && (
         <img
+          src={`data:image/png;base64,${fullHeroImag}`}
           style={{
+            height: "420px",
+            left: "30px",
             position: "absolute",
             top: "30px",
-            left: "30px",
-            height: "420px",
             width: "900px",
           }}
-          src={`data:image/png;base64,${fullHeroImag}`}
         />
       )}
       <div
         style={{
+          background: `rgba(250, 245, 241, ${fullHeroImag ? '0.5' : '1'})`,
+          height: "100%",
+          left: 0,
           position: "absolute",
           top: 0,
-          left: 0,
-          height: "100%",
           width: "100%",
-          background: `rgba(250, 245, 241, ${fullHeroImag ? '0.5' : '1'})`,
         }}
       />
       <img
-        style={{
-          position: "absolute", top: 0, left: 0
-        }}
         src={`data:image/png;base64,${ogpFrame}`}
+        style={{
+          left: 0, position: "absolute", top: 0
+        }}
       />
       {!fullHeroImag && <img
+        src={`data:image/png;base64,${portrait}`}
         style={{
+          height: "200px",
+          left: "40px",
           position: "absolute",
           top: "230px",
-          left: "40px",
-          height: "200px",
         }}
-        src={`data:image/png;base64,${portrait}`}
       />}
       <section
         style={{
-          position: "absolute",
-          top: 0,
           left: 0,
           margin: 0,
           padding: 0,
+          position: "absolute",
+          top: 0,
           width: "100vw",
         }}
       >
         <h1 style={{
           fontSize: "40px",
           lineHeight: "1",
-          textWrap: "pretty",
+          margin: 0,
           padding: "55px",
-          margin: 0
+          textWrap: "pretty"
         }}>
           {text}
         </h1>
         <h2 style={{
-          position: "absolute",
-          top: `${480 - 30 - 75}px`,
-          right: "65px",
           fontSize: "30px",
-          margin: 0
+          margin: 0,
+          position: "absolute",
+          right: "65px",
+          top: `${480 - 30 - 75}px`
         }}>
           y-chan's blogs
         </h2>
@@ -104,7 +105,9 @@ export async function getOgImage(text: string, heroImagePath?: string) {
     }
   )
 
-  return await sharp(Buffer.from(svg)).png().toBuffer()
+  const resvg = new Resvg(svg)
+
+  return resvg.render().asPng()
 }
 
 
