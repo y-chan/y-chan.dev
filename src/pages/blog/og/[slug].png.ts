@@ -1,6 +1,6 @@
 import type { APIContext } from "astro"
 
-import { getOgImage } from "@/components/OgImage.tsx"
+import { getOgImage } from "@/components/OgImage"
 import { getCollection, getEntryBySlug } from "astro:content"
 
 export async function getStaticPaths() {
