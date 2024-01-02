@@ -9,7 +9,6 @@ export async function getOgImage(text: string, heroImagePath?: string) {
   const ogpFrame = fs.readFileSync('src/assets/ogp_frame.png', 'base64')
   const portrait = fs.readFileSync('src/assets/y_chan_portrait.png', 'base64')
   const fullHeroImagePath = `src/assets/${heroImagePath}`
-  console.log(fullHeroImagePath)
   let fullHeroImag: string | undefined
   if (fs.existsSync(fullHeroImagePath)) {
     fullHeroImag = fs.readFileSync(fullHeroImagePath, 'base64')

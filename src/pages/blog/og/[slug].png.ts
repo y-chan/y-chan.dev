@@ -11,7 +11,6 @@ export async function getStaticPaths() {
 }
 
 export async function GET({ params }: APIContext) {
-  console.log("slug", params)
   if (!params.slug) return { status: 404 }
   const post = await getEntryBySlug('blog', params.slug)
   const body = await getOgImage(post?.data.title ?? "No title", post?.data.heroImage)
