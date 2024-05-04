@@ -1,3 +1,4 @@
+import icon from "astro-icon";
 import mdx from '@astrojs/mdx';
 import react from "@astrojs/react";
 import sitemap from '@astrojs/sitemap';
@@ -23,7 +24,7 @@ const __dirname = dirname(__filename);
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx(), sitemap(), tailwind(), react()],
+  integrations: [mdx(), sitemap(), tailwind(), react(), icon()],
   markdown: {
     gfm: true,
     rehypePlugins: [rehypeKatex, rehypePrism, rehypeSlug, [remarkToc, {

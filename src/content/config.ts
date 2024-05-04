@@ -13,4 +13,18 @@ const blog = defineCollection({
   type: "content",
 })
 
-export const collections = { blog }
+const tweet = defineCollection({
+  schema: z.object({
+    date: z.string(),
+    id: z.string(),
+    images: z.string().array(),
+    name: z.string(),
+    quotedTweet: z.string().optional(),
+    tweet: z.string(),
+    userId: z.string(),
+    userImage: z.string(),
+  }),
+  type: "data"
+})
+
+export const collections = { blog, tweet }
