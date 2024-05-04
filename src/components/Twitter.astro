@@ -163,15 +163,17 @@ if (postWithId === undefined) {
     <div class:list={`flex justify-center ${useMargin ? 'm-4' : ''}`}>
       <div class="flex flex-col w-[80vw] md:w-[500px] rounded-xl p-4 bg-white">
         <div class="flex flex-row mx-2">
-          <img alt={`${postWithId.name} icon`} class="w-10 h-10 rounded-full mr-2" src={postWithId.userImage} />
-          <div class="flex flex-col">
-            <div class="flex text-black text-base font-semibold">
-              {postWithId.name}
+          <a class="flex flex-row" href={`https://twitter.com/${postWithId.userId}`} target="_blank">
+            <img alt={`${postWithId.name} icon`} class="w-10 h-10 rounded-full mr-2" src={postWithId.userImage} />
+            <div class="flex flex-col">
+              <div class="flex text-black text-base font-semibold">
+                {postWithId.name}
+              </div>
+              <div class="flex text-gray-500 text-sm font-normal">
+                {postWithId.userId}
+              </div>
             </div>
-            <div class="flex text-gray-500 text-sm font-normal">
-              {postWithId.userId}
-            </div>
-          </div>
+          </a>
           <div class="ml-auto my-auto">
             <a href={`https://twitter.com/${postWithId.userId}/status/${postWithId.id}`} target="_blank">
               <Icon class="h-7 w-7" name="devicon:twitter" />
