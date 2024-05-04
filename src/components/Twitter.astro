@@ -6,7 +6,6 @@ interface Props {
   url: string;
   useMargin?: boolean;
 }
-import { format } from '@formkit/tempo'
 import * as fs from 'fs'
 const { url, useMargin = true } = Astro.props
 
@@ -132,7 +131,7 @@ if (postWithId === undefined) {
 
     const quatedPostId = contentCdn.quoted_tweet.id_str
     const quatedPost = {
-      date: format(contentCdn.quoted_tweet.created_at, { date: "full", time: "short" }),
+      date: contentCdn.quoted_tweet.created_at,
       id: quatedPostId,
       images: quatedTweetImages,
       name: contentCdn.quoted_tweet.user.name,
@@ -145,7 +144,7 @@ if (postWithId === undefined) {
   }
 
   postWithId = {
-    date: format(contentCdn.created_at, { date: "full", time: "short" }),
+    date: contentCdn.created_at,
     id,
     images,
     name: contentCdn.user.name,
@@ -226,8 +225,32 @@ if (postWithId === undefined) {
             </div>
           )
         }
-        <p class="text-left text-gray-500 mx-2 my-0">{postWithId.date}</p>
+        <tweet-date>
+          <p class="text-left text-gray-500 mx-2 my-0" data-message={postWithId.date} id='date'>
+            {postWithId.date}
+          </p>
+        </tweet-date>
       </div>
     </div>
   )
 }
+
+<script>
+  import { format } from '@formkit/tempo'
+
+  class TweetDate extends HTMLElement {
+    constructor() {
+      super();
+
+      const dateElem = this.querySelector('#date');
+      console.log(dateElem)
+      if (!dateElem) {
+        return;
+      }
+
+      dateElem.textContent = format(this.dataset.message!, { date: "full", time: "short" });
+    }
+  }
+
+  customElements.define('tweet-date', TweetDate);
+</script>
