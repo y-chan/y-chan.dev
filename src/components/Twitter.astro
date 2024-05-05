@@ -192,7 +192,7 @@ if (postWithId === undefined) {
                 postWithId.images.map((v, i) => {
                   let style = "";
                   if (postWithId.images.length === 1) {
-                    return <img alt={`tweet media ${i+1}`} class="object-cover max-h-[400px]" loading="lazy" src={v} />
+                    style = 'max-height: 400px'
                   } else if (postWithId.images.length === 3) {
                     if (i === 0) {
                       style = `grid-area: 1 / 1 / 3 / 2`
