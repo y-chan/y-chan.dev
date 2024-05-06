@@ -27,4 +27,14 @@ const tweet = defineCollection({
   type: "data"
 })
 
-export const collections = { blog, tweet }
+const urlData = defineCollection({
+  schema: z.object({
+    description: z.string(),
+    image: z.string(),
+    title: z.string(),
+    type: z.union([z.literal("summary"), z.literal("summary_large_image")]),
+  }),
+  type: "data"
+})
+
+export const collections = { blog, tweet, urlData }
