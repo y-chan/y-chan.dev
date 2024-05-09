@@ -9,6 +9,7 @@ interface Props {
 import * as fs from 'fs'
 const { url, useMargin = true } = Astro.props
 
+// cdnのツイート情報をパースするためのzodスキーマ
 const FetchedCdnTweetSchema = z.object({
   __typename: z.string().optional(),
   created_at: z.string(),
@@ -53,10 +54,16 @@ const FetchedCdnTweetSchema = z.object({
   }),
 })
 
+// cdnのツイート情報をパースするためのzodスキーマ（引用ツイート付き）
 const FetchedCdnTweetSchemaWithQuoted = FetchedCdnTweetSchema.extend({
   quoted_tweet: FetchedCdnTweetSchema.optional(),
 })
 
+/**
+ * ツイートの文面を整形し、html形式で返す
+ * @param cdnContent ツイート情報
+ * @returns html text
+ */
 function beautifyTweet(cdnContent: z.infer<typeof FetchedCdnTweetSchema>): string {
   let tweet = cdnContent.text.replace('\n', '<br />')
 
@@ -83,20 +90,59 @@ function beautifyTweet(cdnContent: z.infer<typeof FetchedCdnTweetSchema>): strin
   return tweet
 }
 
+/**
+ * ツイート情報を整形し、保存する
+ * @param cdnContent ツイート情報
+ * @returns 整形されたツイート情報
+ */
+function generateAndSavePostInfo(cdnContent: z.infer<typeof FetchedCdnTweetSchemaWithQuoted>) {
+  // ツイートの文面を整形
+  const tweet = beautifyTweet(cdnContent)
+
+  // cdnから取得したツイート情報には画像のURLが含まれているため、それを抽出
+  const images = []
+  if (cdnContent.mediaDetails) {
+    for (const media of cdnContent.mediaDetails) {
+      images.push(media.media_url_https)
+    }
+  }
+
+  const id = cdnContent.id_str
+  const postInfo = {
+    date: cdnContent.created_at,
+    id,
+    images,
+    name: cdnContent.user.name,
+    tweet,
+    quotedTweet: cdnContent.quoted_tweet?.id_str,
+    userId: cdnContent.user.screen_name,
+    userImage: cdnContent.user.profile_image_url_https,
+  }
+
+  fs.writeFileSync(`./src/content/tweet/${id}.json`, JSON.stringify(postInfo))
+
+  return postInfo
+}
+
+// ツイートのURLからidを取得
 const id = url.split('/').pop()?.split("?")[0] ?? ''
 
+// ローカルのツイート情報を取得
 const xPosts = await getCollection('tweet') ?? []
 let postWithId = xPosts.find((v) => v.id === id)?.data
 
+// ローカルにツイート情報がない場合は取得し、保存する
 if (postWithId === undefined) {
+  // 埋め込みツイートにアクセスするためのURL
   const base = "https://publish.twitter.com/oembed"
   const baseUrl = new URL(base)
   baseUrl.searchParams.set("url", url)
   baseUrl.searchParams.set("omit_script", "true")
 
+  // cdnにアクセスするためのURL
   const cdn = `https://cdn.syndication.twimg.com/tweet-result?id=${id}&lang=ja&token=a`
 
-  // baseUrlを読み込まないと、cdnのアクセスに失敗することがある
+  // 埋め込みツイートにを読み込まないと、cdnのアクセスに失敗することがある
   await fetch(baseUrl.toString())
     .then<{ html: string }>((res) => res.json())
     .catch(() => null)
@@ -105,56 +151,20 @@ if (postWithId === undefined) {
     .then((res) => res.json())
     .catch(() => null)
 
+  // cdnから取得したツイート情報をパース
   const contentCdn = FetchedCdnTweetSchemaWithQuoted.parse(rawCdnContent)
 
   if (contentCdn === undefined) {
     throw new Error("Failed to fetch tweet")
   }
 
-  const images = []
-  if (contentCdn.mediaDetails) {
-    for (const media of contentCdn.mediaDetails) {
-      images.push(media.media_url_https)
-    }
-  }
+  // ツイート情報を整形し、保存
+  postWithId = generateAndSavePostInfo(contentCdn)
 
-  const tweet = beautifyTweet(contentCdn)
-
+  // 引用リツイートがある場合は、引用リツイートの情報を整形し、保存
   if (contentCdn.quoted_tweet) {
-    const quatedTweetText = beautifyTweet(contentCdn.quoted_tweet)
-    const quatedTweetImages = []
-    if (contentCdn.quoted_tweet.mediaDetails) {
-      for (const media of contentCdn.quoted_tweet.mediaDetails) {
-        quatedTweetImages.push(media.media_url_https)
-      }
-    }
-
-    const quatedPostId = contentCdn.quoted_tweet.id_str
-    const quatedPost = {
-      date: contentCdn.quoted_tweet.created_at,
-      id: quatedPostId,
-      images: quatedTweetImages,
-      name: contentCdn.quoted_tweet.user.name,
-      tweet: quatedTweetText,
-      userId: contentCdn.quoted_tweet.user.screen_name,
-      userImage: contentCdn.quoted_tweet.user.profile_image_url_https,
-    }
-
-    fs.writeFileSync(`./src/content/tweet/${quatedPostId}.json`, JSON.stringify(quatedPost))
+    generateAndSavePostInfo(contentCdn.quoted_tweet)
   }
-
-  postWithId = {
-    date: contentCdn.created_at,
-    id,
-    images,
-    name: contentCdn.user.name,
-    quotedTweet: contentCdn.quoted_tweet ? contentCdn.quoted_tweet.id_str : undefined,
-    tweet,
-    userId: contentCdn.user.screen_name,
-    userImage: contentCdn.user.profile_image_url_https,
-  }
-
-  fs.writeFileSync(`./src/content/tweet/${id}.json`, JSON.stringify(postWithId))
 }
 ---
 
