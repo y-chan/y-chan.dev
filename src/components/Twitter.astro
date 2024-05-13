@@ -26,9 +26,8 @@ const FetchedCdnTweetSchema = z.object({
     })).optional(),
     urls: z.array(z.object({
       display_url: z.string(),
-      end: z.number(),
+      indices: z.array(z.number()),
       expanded_url: z.string(),
-      start: z.number(),
       url: z.string(),
     })),
     user_mentions: z.array(z.object({
@@ -65,7 +64,7 @@ const FetchedCdnTweetSchemaWithQuoted = FetchedCdnTweetSchema.extend({
  * @returns html text
  */
 function beautifyTweet(cdnContent: z.infer<typeof FetchedCdnTweetSchema>): string {
-  let tweet = cdnContent.text.replace('\n', '<br />')
+  let tweet = cdnContent.text.replace(/\n/g, '<br />')
 
   for (const entity of Object.keys(cdnContent.entities)) {
     if (entity === 'media') {
