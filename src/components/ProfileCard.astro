@@ -1,0 +1,22 @@
+---
+import Image from '@/components/Image.astro'
+interface Props {
+  name: string;
+  icon: string;
+  description: string;
+  twitterLink?: string;
+}
+
+const { name, icon, twitterLink, description } = Astro.props
+const LinkWrapper = twitterLink ? 'a' : 'div'
+const ImageWrapper = icon.startsWith('http') ? 'img' : Image
+---
+
+<div class="bg-white flex flex-col rounded-xl max-w-[400px] min-w-[200px]">
+  <LinkWrapper href={twitterLink} class="flex flex-row items-center m-4" >
+    <ImageWrapper src={icon} alt={name} class="w-12 h-12 rounded-full" />
+    <p class="mx-2 text-lg font-bold my-auto">{name}</p>
+  </LinkWrapper>
+  <p class="text-left mx-4 mb-4" set:html={description} />
+
+</div>
