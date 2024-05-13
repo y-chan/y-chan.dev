@@ -1,6 +1,8 @@
 ---
-import { Image as BuiltInImage, type LocalImageProps, type RemoteImageProps } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import type { LocalImageProps, RemoteImageProps } from 'astro:assets'
 
+import { Image as BuiltInImage } from 'astro:assets'
 
 export type Props = LocalImageProps | RemoteImageProps
 
