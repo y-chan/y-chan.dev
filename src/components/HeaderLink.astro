@@ -5,8 +5,17 @@ type Props = HTMLAttributes<'a'>
 
 const { class: className, href, ...props } = Astro.props
 
+if (href == undefined) {
+  throw new Error('The `href` prop is required')
+}
+
 const { pathname } = Astro.url
-const isActive = href === pathname || href === pathname.replace(/\/$/, '')
+let isActive: boolean
+if (href.toString() === '/') {
+  isActive = pathname === '/'
+} else {
+  isActive = pathname.startsWith(href.toString())
+}
 ---
 
 <a class:list={[className, { active: isActive }]} href={href} {...props}>
