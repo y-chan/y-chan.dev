@@ -1,13 +1,16 @@
 ---
 interface Props {
+  height?: number
   src: `https://adventar.org/calendars/${number}`
 }
 
 const props = Astro.props
+
+const iframeHeight = props.height ?? 437
 ---
 
 <div class="m-10">
-  <div class="flex justify-center h-[437px]">
+  <div class="flex justify-center" style=`height: ${iframeHeight}px`>
     <iframe class="block h-full w-[70vw] max-w-[500px]" loading="lazy" src=`${props.src}/embed` title="adventar" />
   </div>
 </div>
