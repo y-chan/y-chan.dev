@@ -127,7 +127,8 @@ a:hover {
   color: var(--accent);
 }
 p {
-  margin-bottom: 1em;
+  margin: 0.5rem 0;
+  line-height: 1.75rem !important;
 }
 textarea {
   width: 100%;
