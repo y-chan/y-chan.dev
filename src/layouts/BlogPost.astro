@@ -22,9 +22,9 @@ const { description, heroImage, pubDate, slug, title, updatedDate } = Astro.prop
   <body>
     <Header />
     <main>
-      <article class="max-w-6xl mx-auto md:p-10 p-4">
-        <div class="md:p-10 p-4 bg-primary-200 rounded-2xl w-full md:mb-10 mb-4">
-          <div>
+      <article class="max-w-7xl mx-auto md:p-10 p-4">
+        <div class="flex flex-col md:p-10 p-4 bg-primary-200 rounded-2xl w-full md:mb-10 mb-4">
+          <div class="mx-auto">
             {heroImage && <Image alt="" height={480} src={heroImage} width={960} />}
           </div>
           <div class="md:pt-6 text-center">
