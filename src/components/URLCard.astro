@@ -1,86 +1,107 @@
 ---
-import { getCollection } from 'astro:content'
-
-import { JSDOM } from 'jsdom';
-import * as fs from 'fs'
-
 import { SITE_URL } from '@/consts'
+import { getCollection } from 'astro:content'
+import bs58 from 'bs58'
+import * as fs from 'fs'
+import { JSDOM } from 'jsdom'
 
 interface Props {
   url: string;
 }
 
 const { url: baseUrl } = Astro.props
-const url = btoa(baseUrl)
+const url = bs58.encode(new Uint8Array(Buffer.from(baseUrl)))
 
 const urlDataList = await getCollection('urlData') ?? []
 let urlData = urlDataList.find((v) => v.id === url)?.data
 
 if (urlData === undefined) {
-  let title = '';
-  let description = '';
-  let image = '';
-  let type: 'summary' | 'summary_large_image' = 'summary';
+  let title = ''
+  let description = ''
+  let image = ''
+  let type: 'summary' | 'summary_large_image' = 'summary'
 
-  const html = await(await fetch(baseUrl)).text();
-  const dom = new JSDOM(html);
+  const html = await(await fetch(baseUrl)).text()
+  const dom = new JSDOM(html)
 
-  const document = dom.window.document;
+  const document = dom.window.document
 
-  const metaTags = document.querySelectorAll('meta');
+  const metaTags = document.querySelectorAll('meta')
 
   for (const metaTag of metaTags) {
-    const property = metaTag.getAttribute('property');
-    const content = metaTag.getAttribute('content');
+    const property = metaTag.getAttribute('property')
+    const content = metaTag.getAttribute('content')
+    const name = metaTag.getAttribute('name')
 
     if (content === null) {
-      continue;
+      continue
     }
 
     if (property === 'og:title') {
-      title = content;
+      title = content
     }
 
-    if (property === 'og:description') {
-      description = content;
+    if (property === 'og:description' || name === 'description') {
+      description = content
     }
 
-    if (property === 'og:image') {
-      image = content;
+    if (property === 'og:image' || name === 'og:image' || property === 'twitter:image' || name === 'twitter:image') {
+      image = content
     }
 
-    if (property === 'twitter:card') {
-      if (content === 'summary_large_image') {
-        type = 'summary_large_image';
+    if (property === 'twitter:card' || name === 'twitter:card') {
+      if (content === 'summary_large_image' || content === 'player') {
+        type = 'summary_large_image'
       }
     }
   }
 
   if (title === '') {
-    const titleElement = document.querySelector("title");
+    const titleElement = document.querySelector("title")
     if (titleElement) {
-      title = titleElement.textContent || "";
+      title = titleElement.textContent || ""
     }
     if (title === '') {
-      throw new Error('No title found');
+      throw new Error('No title found')
     }
   }
 
   if (description === '') {
-    const descriptionElement = document.querySelector("description");
+    const descriptionElement = document.querySelector("description")
     if (descriptionElement) {
-      description = descriptionElement.getAttribute('content') || "";
+      description = descriptionElement.getAttribute('content') || ""
+    }
+  }
+
+  if (image === '') {
+    const linkTags = document.querySelectorAll('link')
+    const origin = new URL(baseUrl).origin
+    for (const linkTag of linkTags) {
+      const rel = linkTag.getAttribute('rel')
+      const href = linkTag.getAttribute('href')
+
+      if (rel === 'icon' || rel === 'shortcut icon') {
+        if (href === null) {
+          continue
+        }
+        if (!href.startsWith(origin)) {
+          image = `${origin}/${href}`
+        } else {
+          image = href
+        }
+        break
+      }
     }
   }
 
   urlData = {
-    title,
     description,
     image,
+    title,
     type
   }
 
-  fs.writeFileSync(`./src/content/urlData/${url}.json`, JSON.stringify(urlData));
+  fs.writeFileSync(`./src/content/urlData/${url}.json`, JSON.stringify(urlData))
 }
 
 const isOtherSite = !baseUrl.includes(SITE_URL)
@@ -89,14 +110,14 @@ const isOtherSite = !baseUrl.includes(SITE_URL)
 
 <a
   class="flex mx-auto my-4 w-full md:w-[600px]"
-  target={isOtherSite ? '_blank' : '_self'}
   href={baseUrl}
+  target={isOtherSite ? '_blank' : '_self'}
 >
   <div class="flex bg-white hover:bg-gray-50 border border-gray-400 w-full text-black hover:text-primary-500 rounded-lg">
     {
       urlData.type === 'summary' && (
         <div class="flex flex-row w-full items-center">
-          <img src={urlData.image} alt={urlData.title} class="h-24 w-24 md:h-36 md:w-36 object-cover" />
+          <img alt={urlData.title} class="h-24 w-24 md:h-36 md:w-36 object-cover" src={urlData.image} />
           <div class="px-4 overflow-hidden">
             <p class="overflow-hidden text-xs m-0 text-nowrap text-gray-400">{baseUrl.split("/")[2]}</p>
             <p class="overflow-hidden text-lg m-0 font-semibold text-nowrap">{urlData.title}</p>
@@ -108,7 +129,7 @@ const isOtherSite = !baseUrl.includes(SITE_URL)
     {
       urlData.type === 'summary_large_image' && (
         <div class="flex flex-col w-full items-center">
-          <img src={urlData.image} alt={urlData.title} class="w-full max-h-[400px] object-cover" />
+          <img alt={urlData.title} class="w-full max-h-[400px] object-cover" src={urlData.image} />
           <div class="flex flex-col w-full mx-2 overflow-hidden">
             <p class="overflow-hidden text-xs mx-2 my-1 text-nowrap text-gray-400">{baseUrl.split("/")[2]}</p>
             <p class="overflow-hidden text-lg mx-2 mt-1 mb-0 font-semibold text-nowrap">{urlData.title}</p>
