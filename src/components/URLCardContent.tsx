@@ -28,7 +28,7 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
     let image = ''
     let type: 'summary' | 'summary_large_image' = 'summary'
 
-    const html = await(await fetch(`https://corsproxy.io/?${encodeURIComponent(props.url)}`)).text()
+    const html = await(await fetch(`https://cors-proxy.y-chan.dev/?q=${encodeURIComponent(props.url)}`)).text()
     const document = new DOMParser().parseFromString(html, 'text/html')
 
     // const document = dom.window.document
