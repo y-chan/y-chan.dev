@@ -146,13 +146,20 @@ img {
   border-radius: 8px;
 }
 code {
-  padding: 2px 5px;
+  padding: 2px;
   background-color: rgb(var(--gray-light));
   border-radius: 2px;
 }
+
+code > span > span {
+  font-size: 1rem;
+}
+
 pre {
-  padding: 1.5em;
+  padding: 1rem;
   border-radius: 8px;
+  margin: 6px 0;
+  line-height: 1.5rem;
 }
 pre > code {
   all: unset;

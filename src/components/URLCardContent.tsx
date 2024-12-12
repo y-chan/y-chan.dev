@@ -13,6 +13,10 @@ interface URLData {
   type: 'summary' | 'summary_large_image';
 }
 
+function getParentURL(url: string): string {
+	return url.replace(/[^/]*$/, "");
+}
+
 const URLCardContent: React.FC<URLCardContentProps> = (props) => {
 
   const [urlData, setUrlData] = useState<URLData>({
@@ -92,7 +96,15 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
             continue
           }
           if (!href.startsWith(origin)) {
-            image = `${origin}/${href}`
+            if (href.startsWith('../')) {
+              if (!props.url.endsWith('/')) {
+                image = getParentURL(props.url) + href
+              } else {
+                image = `${props.url}${href}`
+              }
+            } else {
+              image = `${origin}/${href}`
+            }
           } else {
             image = href
           }
