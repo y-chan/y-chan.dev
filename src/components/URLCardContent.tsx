@@ -26,6 +26,27 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
     type: 'summary'
   })
 
+  const normalizeImageUrl = (url: string): string => {
+    const origin = new URL(props.url).origin
+    let image = ''
+
+    if (!url.startsWith('http')) {
+      if (url.startsWith('../')) {
+        if (!props.url.endsWith('/')) {
+          image = getParentURL(props.url) + url
+        } else {
+          image = `${props.url}${url}`
+        }
+      } else {
+        image = `${origin}/${url}`
+      }
+    } else {
+      image = url
+    }
+
+    return image
+  }
+
   const generateUrlData = useCallback(async (): Promise<URLData> => {
     let title = ''
     let description = ''
@@ -57,7 +78,7 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
       }
 
       if (property === 'og:image' || name === 'og:image' || property === 'twitter:image' || name === 'twitter:image') {
-        image = content
+        image = normalizeImageUrl(content)
       }
 
       if (property === 'twitter:card' || name === 'twitter:card') {
@@ -86,7 +107,6 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
 
     if (image === '') {
       const linkTags = document.querySelectorAll('link')
-      const origin = new URL(props.url).origin
       for (const linkTag of linkTags) {
         const rel = linkTag.getAttribute('rel')
         const href = linkTag.getAttribute('href')
@@ -95,19 +115,7 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
           if (href === null) {
             continue
           }
-          if (!href.startsWith(origin)) {
-            if (href.startsWith('../')) {
-              if (!props.url.endsWith('/')) {
-                image = getParentURL(props.url) + href
-              } else {
-                image = `${props.url}${href}`
-              }
-            } else {
-              image = `${origin}/${href}`
-            }
-          } else {
-            image = href
-          }
+          image = normalizeImageUrl(href)
           break
         }
       }
