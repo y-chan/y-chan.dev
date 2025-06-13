@@ -47,3 +47,18 @@ const { description, image = '/ogp_home.png', title } = Astro.props
 <meta content={title} property="twitter:title" />
 <meta content={description} property="twitter:description" />
 <meta content={new URL(image, Astro.url)} property="twitter:image" />
+
+<script
+  src="https://www.googletagmanager.com/gtag/js?id=G-QM0KEGYYJN"
+  type="text/partytown"
+  async
+  is:inline>
+</script>
+<script type="text/partytown" is:inline>
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+  dataLayer.push(arguments);
+}
+gtag("js", new Date());
+gtag("config", "G-QM0KEGYYJN");
+</script>

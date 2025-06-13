@@ -11,20 +11,25 @@ import remarkEmoji from "remark-emoji";
 import remarkCodeTitles from "remark-flexible-code-titles";
 import remarkMath from "remark-math";
 import remarkToc from "remark-toc";
-
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 
 // eslint-disable-next-line no-restricted-imports
 import { SITE_URL } from './src/consts';
-
+import partytown from "@astrojs/partytown";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [mdx(), sitemap(), tailwind(), react(), icon()],
+  integrations: [
+    mdx(), sitemap(), tailwind(), react(), icon(), partytown({
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+],
   markdown: {
     gfm: true,
     rehypePlugins: [rehypeKatex, rehypePrism, rehypeSlug, [remarkToc, {
@@ -34,7 +39,7 @@ export default defineConfig({
     remarkPlugins: [remarkEmoji, remarkMath, remarkCodeTitles]
   },
   image: {
-    service: passthroughImageService(),
+    service: passthroughImageService()
   },
   vite: {
     optimizeDeps: {
@@ -42,9 +47,9 @@ export default defineConfig({
     },
     resolve: {
       alias: {
-        "@/": `${path.resolve(__dirname)}/src/`,
-      },
-    },
+        "@/": `${path.resolve(__dirname)}/src/`
+      }
+    }
   },
   site: SITE_URL
 });
