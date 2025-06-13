@@ -1,0 +1,62 @@
+---
+import BaseHead from '@/components/BaseHead.astro'
+import Footer from '@/components/Footer.astro'
+import Header from '@/components/Header.astro'
+
+const title = 'プライバシーポリシー'
+const description = '当サイトのプライバシーポリシーです。'
+---
+
+<html lang="jp">
+  <head>
+    <BaseHead description={description} title={title} />
+  </head>
+
+  <body>
+    <div class="min-h-svh">
+      <Header />
+      <main>
+        <article class="max-w-7xl mx-auto md:p-10 p-4">
+          <div class="flex flex-col md:p-10 p-4 bg-primary-200 rounded-2xl w-full md:mb-10 mb-4">
+            <div class="md:pt-6 text-center">
+              <h1>{title}</h1>
+            </div>
+          </div>
+          <div class="p-4 md:p-10 bg-primary-200 rounded-2xl w-full my-10">
+            <p>当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しています。このGoogleアナリティクスはデータの収集のためにCookieを使用しています。このデータは匿名で収集されており、個人を特定するものではありません。</p>
+            <p>この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。この規約に関しての詳細はGoogleアナリティクスサービス利用規約のページやGoogleポリシーと規約ページをご覧ください。</p>
+          </div>
+        </article>
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>
+
+<style lang="scss" is:global>
+  @use '@/styles/variables' as vars;
+  .font-italic {
+    font-style: italic;
+  }
+
+  main {
+    @apply bg-primary-100;
+    @apply m-0 p-0;
+    min-height: calc(100svh - vars.$footer-size);
+
+    padding-top: vars.$header-size;
+  }
+
+
+  h1 {
+    @apply text-4xl;
+    @apply font-bold;
+    @apply my-2;
+  }
+
+
+  p {
+    @apply text-base;
+  }
+
+</style>

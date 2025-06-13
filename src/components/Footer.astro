@@ -3,7 +3,10 @@ const today = new Date()
 ---
 
 <footer>
-	&copy; {today.getFullYear()} y-chan.
+  <nav>
+    <a href="/privacy-policy">プライバシーポリシー</a>
+  </nav>
+  <span>&copy; {today.getFullYear()} y-chan.</span>
 </footer>
 <style>
 	footer {
@@ -12,4 +15,21 @@ const today = new Date()
     @apply text-gray-800;
 		@apply text-center;
 	}
+
+	span {
+		@apply text-base;
+		@apply my-2;
+	}
+
+	nav {
+		@apply h-6;
+		@apply flex;
+		@apply justify-center;
+	}
+
+  nav a {
+    @apply text-primary-500;
+    @apply hover:text-primary-800;
+		@apply text-base;
+  }
 </style>
