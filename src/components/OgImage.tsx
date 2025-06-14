@@ -8,6 +8,7 @@ export async function getOgImage(text: string, heroImagePath?: string) {
   const fontData = fs.readFileSync('public/fonts/LINESeedJP_OTF_Bd.otf')
   const ogpFrame = fs.readFileSync('src/assets/ogp_frame.png', 'base64')
   const portrait = fs.readFileSync('src/assets/y_chan_portrait.png', 'base64')
+  const imageType = heroImagePath?.split('.').pop() || 'png'
   const fullHeroImagePath = `src/assets/${heroImagePath}`
   let fullHeroImag: string | undefined
   if (fs.existsSync(fullHeroImagePath)) {
@@ -22,17 +23,22 @@ export async function getOgImage(text: string, heroImagePath?: string) {
       }}
     >
       {fullHeroImag && (
-        <img
-          alt=""
-          src={`data:image/png;base64,${fullHeroImag}`}
-          style={{
-            height: "420px",
-            left: "30px",
-            position: "absolute",
-            top: "30px",
-            width: "900px",
-          }}
-        />
+        <div style={{
+          display: "flex",
+          height: "420px",
+          justifyContent: "center",
+          margin: "30px",
+          width: "900px",
+        }}>
+          <img
+            alt=""
+            src={`data:image/${imageType};base64,${fullHeroImag}`}
+            style={{
+              minHeight: "420px",
+              minWidth: "900px",
+            }}
+          />
+        </div>
       )}
       <div
         style={{
