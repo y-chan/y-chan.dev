@@ -14,7 +14,7 @@ interface URLData {
 }
 
 function getParentURL(url: string): string {
-	return url.replace(/[^/]*$/, "");
+  return url.replace(/[^/]*$/, "")
 }
 
 const URLCardContent: React.FC<URLCardContentProps> = (props) => {

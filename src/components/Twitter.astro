@@ -26,8 +26,8 @@ const FetchedCdnTweetSchema = z.object({
     })).optional(),
     urls: z.array(z.object({
       display_url: z.string(),
-      indices: z.array(z.number()),
       expanded_url: z.string(),
+      indices: z.array(z.number()),
       url: z.string(),
     })),
     user_mentions: z.array(z.object({
@@ -112,8 +112,8 @@ function generateAndSavePostInfo(cdnContent: z.infer<typeof FetchedCdnTweetSchem
     id,
     images,
     name: cdnContent.user.name,
-    tweet,
     quotedTweet: cdnContent.quoted_tweet?.id_str,
+    tweet,
     userId: cdnContent.user.screen_name,
     userImage: cdnContent.user.profile_image_url_https,
   }
@@ -194,12 +194,12 @@ if (postWithId === undefined) {
         {
           postWithId.images.length > 0 && (
             <div
-              class={`grid grid-cols-${postWithId.images.length > 1 ? 2 : 1} mb-4 mx-auto`}
+              class:list={`grid grid-cols-${postWithId.images.length > 1 ? 2 : 1} mb-4 mx-auto`}
               style={`grid-auto-rows: ${postWithId.images.length > 2 ? '200px' : 'auto'}; grid-auto-columns: 1fr;`}
             >
               {
                 postWithId.images.map((v, i) => {
-                  let style = "";
+                  let style = ""
                   if (postWithId.images.length === 1) {
                     style = 'max-height: 400px'
                   } else if (postWithId.images.length === 3) {
