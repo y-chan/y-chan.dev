@@ -1,0 +1,228 @@
+---
+title: 'DIVER OSINT CTFでメール送信を設定した'
+description: 'Postfixを設定するとCTFdからメールを出せます。うれしいね。'
+pubDate: '2025-06-14'
+slug: diver-osint-ctfd-postfix
+---
+
+こんにちは、Yちゃんです。
+ブログを書くのは久しぶりですね、最近はAdvent Calendarぐらいしかブログを書いてないので本当に久々です。
+
+さて、私は今年開催されたDIVER OSINT CTF 2025に運営としてインフラ構築・運用に携わっていました。
+
+import Twitter from '@/components/Twitter.astro'
+
+<Twitter url="https://x.com/y_chan_dev/status/1931607639932424359" />
+
+今回、インフラを構築するにあたって、運営チームのメンバーから、CTFdのEmail Verifyを有効化してほしいと要望がありました。
+Email Verifyを有効化すると、ユーザが登録したメールアドレスに確認メールが送信され、ユーザはそのメールに記載されたリンクをクリックすることで、登録したメールアドレスが有効であることを確認できます。
+これにより、万が一ユーザーがパスワードを忘れた場合でも、登録したメールアドレスにパスワードリセットのリンクを送信することができるようになります。
+
+今まで運営に携わったことのあるTsukuCTFやUECTFでは、Email Verifyを有効化したことがなかったので今回が初めての取り組みでした。
+というわけで、構築のメモを残そうと思った...のですが、実際に構築したときより便利な方法を見つけたので、その方法を紹介します。
+
+## 前提条件
+
+Postfixを構築し、SMTPリレーサーバとして使用します。
+また、SMTPのリレー先にはGmailのサーバーを使用します。
+このためにCloudflareで取得した独自ドメインにEmail Routingを設定し、メールをGmailに転送するように設定しておきます。
+また、Gmailに独自ドメインのメールアドレスをエイリアスとして登録しておきます。
+この際、SMTPサーバーに`smtp.gmail.com`を指定し、ポート587を使用します。
+また、このためにアプリパスワードなども取得しておきます。このアプリパスワードは、Postfixの設定ファイルでも使用するので、メモっておくと再生成せずに済んで便利です。
+
+### 余談: 規模の大きいCTFを運営する場合
+
+CTFの規模が大きくなると、Gmailのメール送信制限を超えてきます。
+CTFdは1人あたり最低でも2通のメール(メールアドレスの確認メールと、確認完了メール)を送信します。
+Gmailは1日あたりのメール送信数が500件までと限られているので、1日あたりのユーザ登録数が250人を超えるとGmailの制限に引っかかります。
+
+そのため、規模の大きいCTFを運営する場合は、Gmailではなく、AWS SESやResendなどのメール送信サービスを利用することをおすすめします。
+実際、DIVER OSINT CTF 2025では、Gmailを利用していたら競技開始直前にメール制限に引っかかり、Resendに課金しました。
+
+## PostfixのDockerイメージを作る。
+
+<p style="color: red;">ブログ著者を信用できる場合、Docker Hubでイメージを配布しているので、この工程は不要です。</p>
+
+こちらの記事を参考にして少し改変を加えました。
+
+import URLCard from '@/components/URLCard.astro'
+
+<URLCard url="https://zenn.dev/flyingbarbarian/articles/5bb1d38b1ada40" />
+
+まず、イメージを作成します。
+イメージに必要なDockerfileとentrypoint.shを作成します。
+
+```dockerfile:Dockerfile
+FROM ubuntu:24.04
+
+# postfixをインストールする為に、パッケージを更新
+RUN apt update && apt upgrade -y
+
+# postfixをインストール
+RUN DEBIAN_FRONTEND=noninteractive apt install postfix -y
+RUN apt install libsasl2-modules -y
+
+# コンテナ起動時のスクリプト
+COPY ./entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+```
+
+```bash:entrypoint.sh
+#!/bin/bash
+
+# postfixの起動
+postfix start
+
+# Postfixは/var/spool/postfixにchrootするので、
+# 名前解決に際して、/etc/resolv.confではなく/var/spool/postfix/etc/resolv.confを見に行く。
+# 従って、/etc/resolv.confをコピーする。
+cp /etc/resolv.conf /var/spool/postfix/etc/resolv.conf
+
+# SASL認証用のテーブル作成
+chown root:root /etc/postfix/sasl_passwd
+postmap /etc/postfix/sasl_passwd
+
+# postfixの設定変更を反映させる
+postfix reload
+
+# コンテナの起動を維持するため
+tail -f /dev/null
+```
+
+イメージをビルドします。`images`コマンドでイメージが作成されていることを確認します。
+```bash
+$ docker build -t postfix-with-sasl .
+$ docker images
+REPOSITORY                   TAG       IMAGE ID       CREATED       SIZE
+postfix-with-sasl   latest    e5d80896a6b3   2 min ago   213MB
+```
+
+## CTFdのdocker composeファイルの書き換えとConfigの設定
+
+次に、CTFdのdocker composeファイルを編集します。
+今回はnginxの設定の下辺りに以下の設定を書き加えました。
+
+```yaml:docker-compose.yml
+  postfix:
+    # 自分でイメージをビルドした場合は`postfix-with-sasl:latest`に設定
+    image: ychandev/postfix-with-sasl:latest
+    restart: always
+    volumes:
+      - ./conf/postfix/main.cf:/etc/postfix/main.cf
+      - ./conf/postfix/sasl_passwd:/etc/postfix/sasl_passwd
+    depends_on:
+      - ctfd
+    networks:
+        default:
+        internal:
+```
+
+合わせて、postfix用の設定ファイルをCTFdのディレクトリ内の`conf/postfix/main.cf`に作成します。
+他のSMTPサーバーを使用する場合は、`relayhost`あたりの設定を変更してください。
+
+```plaintext:conf/postfix/main.cf
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# See http://www.postfix.org/COMPATIBILITY_README.html -- default to 3.6 on
+# fresh installs.
+compatibility_level = 3.6
+
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_tls_security_level=may
+
+smtp_tls_CApath=/etc/ssl/certs
+smtp_tls_security_level=may
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+myhostname = localhost.lan
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination = $myhostname, localhost, localhost.localdomain, , localhost
+# 他のコンテナからのアクセスを許可する
+mynetworks_style = subnet
+mailbox_size_limit = 0
+recipient_delimiter = +
+inet_interfaces = all
+# ipv6が解決できないことがあるのでipv4のみを使用する
+inet_protocols = ipv4
+
+# ログファイルの設定
+maillog_file = /var/log/mail.log
+
+relayhost = [smtp.gmail.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_sasl_tls_security_options = noanonymous
+smtp_sasl_mechanism_filter = plain
+smtp_use_tls = yes
+```
+
+同様に、PostfixのSASL認証用の設定ファイル`conf/postfix/sasl_passwd`を作成します。
+Gmailでエイリアスを設定した場合と同じように、Gmailアカウントのメールアドレスとアプリパスワード(`aaaabbbbccccdddd`の部分)を設定します。
+
+```plaintext:conf/postfix/sasl_passwd
+[smtp.gmail.com]:587 example@gmail.com:aaaabbbbccccdddd
+```
+
+これで準備は完了です。
+
+## CTFdの起動と設定
+
+CTFdを起動します。
+
+```bash
+$ docker compose up -d
+```
+
+CTFdが起動したら、ブラウザでCTFの基本情報を設定し、管理者アカウントでログインします。
+CTFの設定の際、Email Verifyしておきましょう。
+
+次に、ブラウザで`/admin/config`にアクセスし、`Integrations`カテゴリの`Email Notifications`を開きます。
+
+import Figure from '@/components/Figure.astro'
+
+<Figure alt="CTFdのEmail Notificationsの設定画面" src="ctfd-mail-config.png" class="md:mx-auto w-[90vw] md:w-[80vw]" />
+
+画像のように設定します。具体的には
+
+- `Mail from Address`: メールを送信するアドレスを設定します。ここは任意のアドレスを使ってください。
+- `Mail Server Address`: `postfix`と入力します。これは、CTFdのdocker composeファイルで設定したPostfixのサービス名が、そのままバーチャルホスト名として使えるためです。
+- `Mail Server Port`: `25`と入力します。Postfixがデフォルトでポート25を使用するためです。
+- その他のチェックボックス等は特にいじらずそのままにしておきます。
+
+これで、CTFdからメールを送信できるようになります。
+
+## 動作確認
+
+`/reset_password`にアクセスし、メールアドレスを入力してパスワードリセットのメールを送信します。
+その後、メールアドレスに確認メールが届くことを確認します。
+
+<Figure alt="CTFdから来るメールのサンプル" src="ctfd-mail-example.png" class="md:mx-auto w-[90vw] md:w-[80vw]" />
+
+## おわりに
+
+以上で、CTFdからメールを送信するためのPostfixの設定が完了しました。
+これで、ユーザー周りの問い合わせを減らせて、CTFの運営が楽になると思います。
+
+CTFdの運用に関しては、ほかにもいろいろ工夫できるところはあるのですが、今回はそこまでできてないので、また機会があれば取り組みたいなと思います。
