@@ -2,9 +2,10 @@
 import PortraitImage from'@/assets/y_chan_portrait.png'
 import BaseHead from '@/components/BaseHead.astro'
 import Header from '@/components/Header.astro'
+import Footer from '@/components/Footer.astro'
+import { certificates, techStack, timeline } from '@/components/portfolioData'
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts'
 import { Image } from 'astro:assets'
-
 ---
 
 <!doctype html>
@@ -14,16 +15,16 @@ import { Image } from 'astro:assets'
   </head>
   <body>
     <Header title={SITE_TITLE} />
-    <main>
-      <div class="flex flex-1 w-[100vw] h-[100vh] bg-primary-300">
+    <main class="header-padding">
+      <div class="flex flex-1 w-[100vw] bg-primary-300 first-view-height">
         <div class="flex flex-wrap w-[100vw]">
-          <div class="flex items-center md:h-[100vh] h-[60vh] md:w-[40vw] w-[100vw]">
+          <div class="flex items-center first-view-portrait-height md:p-0 p-8 md:w-[40vw] w-[100vw]">
             <div class="flex justify-center mx-auto">
               <Image alt="portrait" class="h-[100%]" src={PortraitImage} />
             </div>
           </div>
           <div class="md:w-[60vw] w-[100vw]">
-            <div class="flex items-center md:h-[100vh] h-[40vh]">
+            <div class="flex items-center first-view-text-height">
               <div class="flex mx-auto">
                 <div class="flex-col flex-1">
                   <div class="text-4xl">
@@ -32,22 +33,129 @@ import { Image } from 'astro:assets'
                   <div class="text-base">
                     The University of Electro-Communications
                   </div>
-                  <div class="text-base">
-                    このページは工事中です
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="bg-primary-100 py-16 mx-16">
+        <div class="flex flex-col xl:flex-row space-x-4">
+          <div class="flex flex-col flex-1">
+            <section class="mb-8">
+              <h2 class="text-3xl font-bold mb-6 text-primary-600">About Me</h2>
+              <div class="prose max-w-none">
+                <p class="text-lg leading-relaxed">
+                  かわいいえんじにゃー兼研究者見習い。<br />
+                  ものづくり全般とかわいいものが好き。<br />
+                  プログラミングにとどまらず、料理、裁縫、カクテルづくりなど、多岐にわたるものづくりをだいたいなんでもします。<br />
+                  好奇心旺盛で、ひとまずなんでもやってみようという性格です。<br />
+                  ときどきロリィタを着たり、髪色で遊んだり、今を楽しんで生きています。<br />
+                  技術を活用し、エンタメを作ったり、支えたりといったことに興味があります。
+                </p>
+              </div>
+            </section>
+
+            <!-- 資格 -->
+            <section class="mb-16">
+              <h2 class="text-3xl font-bold mb-6 text-primary-600">Certifications</h2>
+              <div class="space-y-4 ">
+                {certificates.map((cert) => (
+                  <div class="p-4 bg-primary-50 rounded-lg">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h3 class="font-semibold">{cert.name}</h3>
+                        <p class="text-gray-600">{cert.date}</p>
+                      </div>
+                      <span class="text-sm text-gray-500">{cert.issuer}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+          <div class="flex flex-col flex-1">
+            <!-- 技術スタック -->
+            <section class="mb-16">
+              <h2 class="text-3xl font-bold mb-6 text-primary-600">Tech Stack</h2>
+              <div class="grid grid-cols-1 space-y-4">
+                {Object.entries(techStack).map(([category, technologies]) => (
+                  <div class="p-6 bg-primary-50 rounded-lg">
+                    <h3 class="font-semibold mb-4 text-left">{category}</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {technologies.map((tech) => (
+                        <div class="flex flex-col items-center text-center space-y-2">
+                          <img alt={tech.name} class="w-10 h-10" src={tech.icon} />
+                          <span class="text-sm font-medium">{tech.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <!-- 来歴 -->
+          <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 text-primary-600">Timeline</h2>
+            <div class="flex flex-row">
+              <div class="ml-2 -mr-[10px] min-w-[4px] bg-primary-300"></div>
+              <div class="flex flex-col">
+                {timeline.map((item) => (
+                  <div class="flex items-start mb-4 last:mb-0">
+                    <div class="flex flex-col items-center mr-3">
+                      <div class="w-4 h-4 bg-primary-300 rounded-full border-2 border-primary-400 flex-shrink-0"></div>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-sm text-primary-600 mb-1">{item.date}</div>
+                      <h3 class="font-semibold mb-2">{item.title}</h3>
+                      <p class="text-gray-600 text-base">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <!-- <div class="flex-grow"></div> -->
+          </section>
+        </div>
+      </div>
     </main>
+    <Footer />
   </body>
 </html>
 
 <style lang="scss">
+  @use '@/styles/variables' as vars;
   main {
     margin: 0;
     padding: 0;
+  }
+
+  .first-view-height {
+    height: calc(100svh - vars.$header-size);
+  }
+
+  .first-view-portrait-height {
+    height: calc(100svh - vars.$header-size);
+  }
+
+  .first-view-text-height {
+    height: calc(100svh - vars.$header-size);
+  }
+
+  @media (max-width: 768px) {
+    .first-view-portrait-height {
+      @apply h-[70%];
+    }
+
+    .first-view-text-height {
+      @apply h-[30%];
+    }
+  }
+
+  .header-padding {
+    padding-top: vars.$header-size;
+    padding-bottom: calc(-1 * vars.$footer-size);
   }
 </style>
