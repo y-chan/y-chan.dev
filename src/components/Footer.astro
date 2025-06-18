@@ -6,7 +6,8 @@ const today = new Date()
   <nav>
     <a href="/privacy-policy">プライバシーポリシー</a>
   </nav>
-  <span>&copy; {today.getFullYear()} y-chan.</span>
+  <span>&copy; {today.getFullYear()} y-chan.</span><br />
+  <span>Icon by <a href="https://x.com/ssohsn">@ssohsn</a></span>
 </footer>
 <style>
 	footer {
@@ -27,7 +28,7 @@ const today = new Date()
 		@apply justify-center;
 	}
 
-  nav a {
+  a {
     @apply text-primary-500;
     @apply hover:text-primary-800;
 		@apply text-base;
