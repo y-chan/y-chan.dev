@@ -11,6 +11,8 @@ interface Props {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 
+const isProd = import.meta.env.PROD
+
 const { description, image = '/ogp_home.png', title } = Astro.props
 ---
 
@@ -48,17 +50,23 @@ const { description, image = '/ogp_home.png', title } = Astro.props
 <meta content={description} property="twitter:description" />
 <meta content={new URL(image, Astro.url)} property="twitter:image" />
 
-<script
-  src="https://www.googletagmanager.com/gtag/js?id=G-QM0KEGYYJN"
-  type="text/partytown"
-  async
-  is:inline>
-</script>
-<script type="text/partytown" is:inline>
-window.dataLayer = window.dataLayer || [];
-function gtag() {
-  dataLayer.push(arguments);
+{
+  isProd && (
+    <>
+      <script
+        src="https://www.googletagmanager.com/gtag/js?id=G-QM0KEGYYJN"
+        type="text/partytown"
+        async
+        is:inline>
+      </script>
+      <script type="text/partytown" is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-QM0KEGYYJN");
+      </script>
+    </>
+  )
 }
-gtag("js", new Date());
-gtag("config", "G-QM0KEGYYJN");
-</script>
