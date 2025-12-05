@@ -27,6 +27,7 @@ jobs:
       - name: Build
         run: |
           yarn install --frozen-lockfile
+          npx playwright install
           yarn run build
 
       - name: Publish to Cloudflare Pages
