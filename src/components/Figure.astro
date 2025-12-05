@@ -1,12 +1,72 @@
 ---
+import type { ImageMetadata } from 'astro'
+
 import Image, { type Props as ImageProps } from "@/components/Image.astro"
 
-type Props = ImageProps
+// TODO: refactor
+// AIに実装してもらったそのままなので
+type VideoProps = {
+  alt?: string
+  autoplay?: boolean
+  class?: string
+  controls?: boolean
+  height?: number | string
+  loop?: boolean
+  muted?: boolean
+  src: string
+  width?: number | string
+}
 
-const props = Astro.props
+type Props = ImageProps | VideoProps
+
+const props = Astro.props as Props
+
+// 動画ファイルの拡張子を判定
+const isVideo = (src: ImageMetadata | Promise<{ default: ImageMetadata }> | string) => {
+  if (typeof src === 'string') {
+    return /\.(mp4|webm|ogg|mov)$/i.test(src)
+  }
+  return false
+}
+
+const isVideoFile = isVideo(props.src)
+
+// 動画ファイルの場合、assetsフォルダからのパスを解決
+let videoSrc = props.src as string
+if (isVideoFile && typeof videoSrc === 'string') {
+  if (!videoSrc.startsWith('http') && !videoSrc.startsWith('/')) {
+    // 相対パスの場合、assetsフォルダ内のファイルとして扱う
+    const videos = import.meta.glob<string>('/src/assets/*.{mp4,webm,ogg,mov}', { eager: true, import: 'default' })
+    const videoPath = `/src/assets/${videoSrc}`
+    if (videos[videoPath]) {
+      videoSrc = videos[videoPath]
+    } else {
+      throw new Error(`"${videoSrc}" does not exist in glob: "src/assets/*.{mp4,webm,ogg,mov}"`)
+    }
+  }
+}
+
+// 型ガードを使って適切にpropsを分離
+const videoProps = isVideoFile ? props as VideoProps : null
+const imageProps = !isVideoFile ? props as ImageProps : null
 ---
 
 <figure class="flex flex-col justify-center m-8 text-center text-base">
-  <Image {...props} />
-  {props.alt ?? <figcaption>{props.alt}</figcaption>}
-</div>
+  {isVideoFile && videoProps ? (
+    <video
+      autoplay={videoProps.autoplay}
+      class:list={videoProps.class}
+      controls={videoProps.controls !== false}
+      height={videoProps.height}
+      loop={videoProps.loop}
+      muted={videoProps.muted}
+      src={videoSrc}
+      width={videoProps.width}
+    >
+      <track kind="captions" />
+    </video>
+  ) : imageProps && (
+    <Image {...imageProps} />
+  )}
+  {props.alt && <figcaption>{props.alt}</figcaption>}
+</figure>
