@@ -13,7 +13,7 @@
   "dependencies": {
     "@astrojs/check": "^0.3.4",
     "@astrojs/cloudflare": "^8.0.1",
-    "@astrojs/mdx": "^2.0.2",
+    "@astrojs/mdx": "^4.3.12",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/react": "^3.0.9",
     "@astrojs/rss": "^4.0.1",
@@ -24,13 +24,14 @@
     "@resvg/resvg-js": "^2.6.0",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
-    "astro": "^4.0.7",
+    "astro": "^5.16.4",
     "astro-icon": "^1.1.0",
     "bs58": "^6.0.0",
     "jsdom": "^24.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rehype-katex": "^7.0.0",
+    "rehype-mermaid": "^3.0.0",
     "rehype-slug": "^6.0.0",
     "remark-breaks": "^4.0.0",
     "remark-emoji": "^4.0.1",
@@ -59,6 +60,7 @@
     "eslint-plugin-prettier": "^5.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "playwright": "^1.57.0",
     "prettier": "^3.1.1"
   }
 }

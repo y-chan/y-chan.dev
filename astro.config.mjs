@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import sitemap from '@astrojs/sitemap';
 import tailwind from "@astrojs/tailwind";
 import rehypePrism from "@mapbox/rehype-prism";
+import rehypeMermaid from 'rehype-mermaid';
 import { defineConfig, passthroughImageService } from 'astro/config';
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
@@ -35,8 +36,12 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex, rehypePrism, rehypeSlug, [remarkToc, {
       heading: "目次",
       maxDepth: 3
-    }]],
-    remarkPlugins: [remarkEmoji, remarkMath, remarkCodeTitles]
+    }], rehypeMermaid],
+    remarkPlugins: [remarkEmoji, remarkMath, remarkCodeTitles],
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['mermaid', 'js'],
+    },
   },
   image: {
     service: passthroughImageService()
