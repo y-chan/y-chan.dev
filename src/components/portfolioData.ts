@@ -1,13 +1,13 @@
 /* eslint-disable perfectionist/sort-objects */
 export const certificates = [
-  { 
-    name: "基本情報技術者", 
-    date: "2019年12月", 
+  {
+    name: "基本情報技術者",
+    date: "2019年12月",
     issuer: "独立行政法人 情報処理推進機構（IPA）"
   },
-  { 
-    name: "情報処理安全確保支援士(未登録)", 
-    date: "2022年6月", 
+  {
+    name: "情報処理安全確保支援士(未登録)",
+    date: "2022年6月",
     issuer: "独立行政法人 情報処理推進機構（IPA）"
   },
 ]
@@ -55,9 +55,19 @@ export const timeline = [
     description: "セキュリティ・キャンプ全国大会2019のOS開発ゼミに参加し、修了しました。周りのつよつよにボコボコにされました。"
   },
   {
+    date: "2020年4月 - 2022年3月",
+    title: "兵庫県新型コロナウイルスまとめサイト メンテナー",
+    description: "OSSであるサイトのメンテナーをしていました。"
+  },
+  {
     date: "2020年6月 - 2021年3月",
     title: "SecHack365 2020 参加/修了",
-    description: "SecHack365 2020の開発駆動コース仲山ゼミに参加し、修了しました。"
+    description: "SecHack365 2020の開発駆動コース仲山ゼミに参加し、修了しました。「Atomic Swap Network」という制作物を作りました。"
+  },
+  {
+    date: "2020年6月 - 2021年3月",
+    title: "Code for Japan アルバイト・インターン",
+    description: "東京都新型コロナウイルス対策サイトを保守するCode for Japanで、アルバイト・インターンをしていました。"
   },
   {
     date: "2021年3月",
@@ -67,7 +77,7 @@ export const timeline = [
   {
     date: "2021年12月",
     title: "VOICEVOX OSSレビュワー拝命",
-    description: "VOICEVOXのOSSレビュワーになりました。"
+    description: "2021年8月からコントリビュートしていたVOICEVOXのOSSレビュワーになりました。"
   },
   {
     date: "2022年3月",
