@@ -115,10 +115,28 @@ const { description, heroImage, pubDate, slug, title, updatedDate } = Astro.prop
   }
 
   .remark-code-title {
+    // for using flex and align-items: center
+    @apply w-full;
+    @apply text-left;
+
     @apply text-base;
     @apply font-bold;
     @apply px-2;
     @apply py-1;
+  }
+
+  // for mermaid figure centering, but effect code block
+  .remark-code-container {
+    display: flex;
+    // if with title, direction must be column
+    flex-direction: column;
+    // not justify-content: center, because direction is column
+    align-items: center;
+
+    // for code block display full width
+    pre {
+      width: 100%;
+    }
   }
 
   pre {
