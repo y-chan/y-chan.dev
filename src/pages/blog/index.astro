@@ -77,13 +77,13 @@ const posts = (await getCollection('blog')).sort(
     <Header />
     <main class="w-full">
       <section class="p-10">
-        <ul class="flex flex-wrap gap-8 list-none m-0 p-0">
+        <ul class="flex flex-col md:flex-row md:flex-wrap gap-8 list-none m-0 p-0">
           {
             posts.map((post) => (
               <li class="">
                 <a href={`/blog/${post.slug}/`}>
-                  <!-- 50vw is half of screen, and 3.5rem is gap(gap-8 / 2) plus padding(p-10) -->
-                  <div class="w-full max-h-[calc((50vw-3.5rem)/2)] overflow-y-hidden rounded-lg mb-2">
+                  <!-- 5rem is gap(gap-8), and 3.5rem is gap(gap-8 / 2) plus padding(p-10) -->
+                  <div class="max-h-[calc((100vw-5rem)/2)] md:max-h-[calc((50vw-3.5rem)/2)] overflow-y-hidden rounded-lg mb-2">
                     <Image alt="" height={360} src={post.data.heroImage ?? `${SITE_URL}/blog/og/${post.slug}.png`}) width={720} />
                   </div>
                   <h4 class="text-xl text-black">{post.data.title}</h4>
