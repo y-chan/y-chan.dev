@@ -13,10 +13,6 @@ interface URLData {
   type: 'summary' | 'summary_large_image';
 }
 
-function getParentURL(url: string): string {
-  return url.replace(/[^/]*$/, "")
-}
-
 const URLCardContent: React.FC<URLCardContentProps> = (props) => {
 
   const [urlData, setUrlData] = useState<URLData>({
@@ -26,26 +22,25 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
     type: 'summary'
   })
 
-  const normalizeImageUrl = (url: string): string => {
-    const origin = new URL(props.url).origin
-    let image = ''
+  const normalizeImageUrl = useCallback((url: string): string => {
+    const trimmed = url.trim()
+    if (trimmed === '') return ''
 
-    if (!url.startsWith('http')) {
-      if (url.startsWith('../')) {
-        if (!props.url.endsWith('/')) {
-          image = getParentURL(props.url) + url
-        } else {
-          image = `${props.url}${url}`
-        }
-      } else {
-        image = `${origin}/${url}`
-      }
-    } else {
-      image = url
+    // data URI (e.g. data:image/svg+xml,...) はそのまま <img src> に渡す
+    // ※ content にスペースや # が混ざっている場合、new URL() が例外になることがあるため先に弾く
+    if (trimmed.startsWith('data:')) return trimmed
+
+    // props.url が末尾スラッシュ無しだと「ファイル扱い」になり相対解決がズレることがあるので、
+    // ディレクトリ扱いの base を用意して解決する
+    const base = props.url.endsWith('/') ? props.url : `${props.url}/`
+
+    try {
+      return new URL(trimmed, base).toString()
+    } catch {
+      // どうしても解決できない場合は壊さず原文を返す
+      return trimmed
     }
-
-    return image
-  }
+  }, [props.url])
 
   const generateUrlData = useCallback(async (): Promise<URLData> => {
     let title = ''
@@ -127,14 +122,14 @@ const URLCardContent: React.FC<URLCardContentProps> = (props) => {
       title,
       type
     }
-  }, [props.url])
+  }, [props.url, normalizeImageUrl])
 
   useEffect(() => {
     void generateUrlData().then((data) => {
       setUrlData(data)
       console.log(data)
     })
-  }, [])
+  }, [generateUrlData])
 
   return (
     <div className="flex bg-white hover:bg-gray-50 border border-gray-400 w-full text-black hover:text-primary-500 rounded-lg">
