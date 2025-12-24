@@ -12,7 +12,7 @@ const LinkWrapper = twitterLink ? 'a' : 'div'
 const ImageWrapper = icon.startsWith('http') ? 'img' : Image
 ---
 
-<div class="bg-white flex flex-col rounded-xl max-w-[400px] min-w-[200px]">
+<div class="bg-white flex flex-col rounded-xl md:max-w-[30vw] min-w-[300px]">
   <LinkWrapper class="flex flex-row items-center m-4" href={twitterLink} >
     <ImageWrapper alt={name} class="w-12 h-12 rounded-full" src={icon} />
     <p class="mx-2 text-lg font-bold my-auto">{name}</p>
