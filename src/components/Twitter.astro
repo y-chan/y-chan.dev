@@ -29,13 +29,13 @@ const FetchedCdnTweetSchema = z.object({
       expanded_url: z.string(),
       indices: z.array(z.number()),
       url: z.string(),
-    })),
+    })).default([]),
     user_mentions: z.array(z.object({
       id_str: z.string(),
       indices: z.array(z.number()),
       name: z.string(),
       screen_name: z.string(),
-    })),
+    })).default([]),
   }),
   id_str: z.string(),
   mediaDetails: z.array(z.object({
@@ -150,15 +150,15 @@ if (postWithId === undefined) {
     .then((res) => res.json())
     .catch(() => null)
 
-  console.log(`[Twitter] CDN response for ${id}:`)
-  console.log(JSON.stringify(rawCdnContent, null, 2))
-
   // cdnから取得したツイート情報をパース
-  const contentCdn = FetchedCdnTweetSchemaWithQuoted.parse(rawCdnContent)
-
-  if (contentCdn === undefined) {
-    throw new Error("Failed to fetch tweet")
+  const parsedCdnContent = FetchedCdnTweetSchemaWithQuoted.safeParse(rawCdnContent)
+  if (!parsedCdnContent.success) {
+    const issues = parsedCdnContent.error.issues
+      .map((issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`)
+      .join(', ')
+    throw new Error(`Failed to parse tweet ${id}: ${issues}`)
   }
+  const contentCdn = parsedCdnContent.data
 
   // ツイート情報を整形し、保存
   postWithId = generateAndSavePostInfo(contentCdn)
