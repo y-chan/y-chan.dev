@@ -17,7 +17,7 @@ const FetchedCdnTweetSchema = z.object({
     hashtags: z.array(z.object({
       indices: z.array(z.number()),
       text: z.string(),
-    })),
+    })).default([]),
     media: z.array(z.object({
       display_url: z.string(),
       expanded_url: z.string(),
