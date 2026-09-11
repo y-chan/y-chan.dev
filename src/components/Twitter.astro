@@ -150,6 +150,9 @@ if (postWithId === undefined) {
     .then((res) => res.json())
     .catch(() => null)
 
+  console.log(`[Twitter] CDN response for ${id}:`)
+  console.log(JSON.stringify(rawCdnContent, null, 2))
+
   // cdnから取得したツイート情報をパース
   const contentCdn = FetchedCdnTweetSchemaWithQuoted.parse(rawCdnContent)
 
